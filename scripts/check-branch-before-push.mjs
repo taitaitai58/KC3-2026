@@ -57,7 +57,8 @@ function askPushConfirmation() {
 }
 
 async function main() {
-  const currentBranch = exec('git symbolic-ref --short HEAD 2>nul || git symbolic-ref --short HEAD 2>/dev/null');
+  const devNull = process.platform === 'win32' ? 'nul' : '/dev/null';
+  const currentBranch = exec(`git symbolic-ref --short HEAD 2>${devNull}`);
   if (!currentBranch) {
     process.exit(0); // detached HEAD
   }
