@@ -75,6 +75,26 @@ pnpm run setup
 pnpm run prepare
 ```
 
+### 環境変数の設定（任意）
+
+LLM連携やGoogle Calendar連携を使用する場合は、環境変数を設定してください。
+
+```bash
+# .env.example をコピーして .env を作成
+cp .env.example .env
+
+# .env を編集してAPIキーを設定
+```
+
+| 変数名                 | 説明                                     | 必須 |
+| ---------------------- | ---------------------------------------- | ---- |
+| `LLM_API_KEY`          | LLMサービスのAPIキー（OpenAI, Gemini等） | 任意 |
+| `LLM_MODEL`            | 使用するLLMモデル名（デフォルト: gpt-4） | 任意 |
+| `GOOGLE_CLIENT_ID`     | Google OAuth クライアントID              | 任意 |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth クライアントシークレット    | 任意 |
+
+> **Note**: これらの機能は現在実装予定です。照度センサー機能のみを使う場合は環境変数の設定は不要です。
+
 ### 開発サーバーの起動
 
 ```bash
@@ -90,19 +110,144 @@ pnpm run ios
 
 ## プロジェクト構成
 
+FSD Lite（Feature-Sliced Design の簡易版）を採用しています。
+
 ```
 SleepSupportApp/
+├── app/                          # Expo Router (ルーティング定義のみ)
+│   ├── (tabs)/                   # タブナビゲーション
+│   │   ├── _layout.tsx           # タブ設定
+│   │   ├── index.tsx             # ホームタブ
+│   │   └── profile.tsx           # プロフィールタブ
+│   └── _layout.tsx               # Root Layout
+│
 ├── src/
-│   ├── components/     # 再利用可能なUIコンポーネント
-│   ├── screens/        # 画面コンポーネント
-│   ├── hooks/          # カスタムフック
-│   ├── utils/          # ユーティリティ関数
-│   ├── constants/      # 定数定義
-│   ├── types/          # TypeScript型定義
-│   └── services/       # 外部サービス連携
-├── assets/             # 画像・フォントなどの静的ファイル
-├── App.tsx             # アプリのエントリーポイント
-└── app.json            # Expo設定ファイル
+│   ├── features/                 # 機能単位のモジュール（主戦場）
+│   │   ├── auth/                 # 認証機能
+│   │   ├── home/                 # ホーム画面
+│   │   ├── light-sensor/         # 照度センサー機能
+│   │   └── profile/              # プロフィール画面
+│   │
+│   └── shared/                   # アプリ全体で共有
+│       ├── components/           # 汎用UIコンポーネント
+│       ├── constants/            # 定数（テーマカラー等）
+│       ├── lib/                  # 外部サービス連携（LLM, Calendar）
+│       └── types/                # 共通型定義
+│
+├── assets/                       # 画像・フォント等
+└── app.json                      # Expo設定ファイル
+```
+
+詳細なアーキテクチャについては [ARCHITECTURE.md](./ARCHITECTURE.md) を参照してください。
+
+## バックエンド (Docker)
+
+バックエンドはFastAPI + PostgreSQL（開発環境）/ Supabase（本番環境）で構成されています。
+
+### 前提条件
+
+- Docker Desktop（または Docker Engine + Docker Compose）
+
+### バックエンドの起動
+
+```bash
+# 開発環境（FastAPI + PostgreSQL）
+docker-compose up -d
+
+# ログを見ながら起動
+docker-compose up
+
+# 停止
+docker-compose down
+
+# データも含めて完全に削除
+docker-compose down -v
+```
+
+### CRUDテスト
+
+```bash
+# 1. バックエンドを起動
+docker compose up -d
+
+# 2. 起動を待ってからテスト実行
+# 方法A: curl スクリプト（jq があれば整形表示）
+chmod +x backend/scripts/test-crud.sh
+./backend/scripts/test-crud.sh
+
+# 方法B: pytest（要: uv、DB起動中）
+# ※ TestClient と async DB の組み合わせでイベントループ競合が発生する場合あり
+cd backend && uv run pytest tests/ -v
+```
+
+### エンドポイント
+
+| URL                                    | 説明                       |
+| -------------------------------------- | -------------------------- |
+| http://localhost:8000                  | APIルート                  |
+| http://localhost:8000/api/docs         | Swagger UI（開発環境のみ） |
+| http://localhost:8000/api/redoc        | ReDoc（開発環境のみ）      |
+| http://localhost:8000/api/v1/health    | ヘルスチェック             |
+| http://localhost:8000/api/v1/health/db | DBヘルスチェック           |
+
+### 本番環境
+
+本番環境では `docker-compose.prod.yml` を使用し、Supabase Cloudに接続します。
+
+```bash
+# 本番用設定で起動
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+`.env` に以下を設定してください：
+
+```
+ENV=production
+DATABASE_URL=postgresql+asyncpg://postgres:[PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres
+SUPABASE_URL=https://[PROJECT-REF].supabase.co
+SUPABASE_ANON_KEY=[YOUR-ANON-KEY]
+SUPABASE_SERVICE_ROLE_KEY=[YOUR-SERVICE-ROLE-KEY]
+```
+
+### バックエンドのローカル開発（uv）
+
+Pythonパッケージ管理に [uv](https://docs.astral.sh/uv/) を使用しています。
+
+```bash
+# uv のインストール（未導入の場合）
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# 依存関係のインストール
+cd backend && uv sync
+
+# 開発サーバー起動（DBは docker compose up -d で別途起動）
+uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+# テスト実行
+uv run pytest tests/ -v
+```
+
+### バックエンドのディレクトリ構成
+
+```
+backend/
+├── app/
+│   ├── main.py           # FastAPIエントリーポイント
+│   ├── config.py         # 設定（環境変数読み込み）
+│   ├── database.py       # DB接続設定
+│   ├── models/           # SQLAlchemyモデル
+│   ├── repositories/     # データアクセス層
+│   ├── routers/          # APIルーター
+│   ├── schemas/          # Pydanticスキーマ（入出力DTO）
+│   └── usecases/         # ビジネスロジック層
+├── scripts/
+│   └── test-crud.sh      # CRUD手動テストスクリプト
+├── tests/                # pytest
+├── pyproject.toml        # プロジェクト設定・依存関係（uv）
+├── uv.lock               # ロックファイル
+├── pytest.ini
+├── Dockerfile
+└── init.sql              # DB初期化SQL
 ```
 
 ## 開発ルール

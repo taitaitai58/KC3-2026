@@ -1,3 +1,8 @@
+/**
+ * ESLint - コード品質チェック
+ * バグになりやすい書き方やルール違反を検出する（未使用変数、React Hooksの使い方など）
+ * pnpm lint で実行
+ */
 import js from '@eslint/js';
 import tseslint from '@typescript-eslint/eslint-plugin';
 import tsparser from '@typescript-eslint/parser';

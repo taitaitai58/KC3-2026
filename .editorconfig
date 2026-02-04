@@ -1,4 +1,6 @@
-# EditorConfig helps maintain consistent coding styles
+# EditorConfig - エディタの基本設定を統一
+# インデント（スペース2）、改行コード（LF）、末尾空白削除など
+# VSCode/Cursor等が自動で読み込む（チーム内でフォーマットを揃えるため）
 # https://editorconfig.org
 
 root = true

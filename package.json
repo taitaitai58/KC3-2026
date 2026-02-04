@@ -1,4 +1,5 @@
 {
+  "_comment": "package.json - フロントの依存関係とスクリプト。pnpm install で依存を入れ、pnpm start 等で実行",
   "name": "sleepsupportapp",
   "version": "1.0.0",
   "packageManager": "pnpm@9.15.0",

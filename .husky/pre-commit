@@ -1,1 +1,4 @@
+#!/bin/sh
+# pre-commit: コミット前に自動実行されるフック
+# lint-staged で変更したファイルのみ ESLint + Prettier をかける
 pnpm exec lint-staged

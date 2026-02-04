@@ -1,4 +1,5 @@
 {
+  "_comment": "Expoアプリの設定。アプリ名、アイコン、iOS/Androidのパッケージ名など",
   "expo": {
     "name": "SleepSupportApp",
     "slug": "SleepSupportApp",

@@ -1,4 +1,7 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+# .gitignore - Gitで追跡しないファイルの一覧
+# ここに書いたファイル/フォルダはGitにコミットされない
+# （node_modules、.env、ビルド成果物など）
+# https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
 # dependencies
 node_modules/
@@ -44,3 +47,18 @@ package-lock.json
 # generated native folders
 /ios
 /android
+
+# Python (backend)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+*.egg-info/
+.pytest_cache/
+
+# Docker
+*.log
