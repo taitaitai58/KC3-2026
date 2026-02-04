@@ -20,7 +20,7 @@
 ### 前提条件
 
 - Node.js 18以上
-- npm または yarn
+- pnpm（Node.js 16.13+ では `corepack enable` で有効化。または `npm install -g pnpm` でインストール）
 - Android Studio（エミュレーター使用時）
 - Expo Go アプリ（実機テスト用）
 
@@ -62,24 +62,30 @@ adb --version
 ### インストール
 
 ```bash
+# pnpmを有効化（初回のみ、Node.jsに同梱のCorepackを使用）
+corepack enable
+
 # 依存関係のインストール
-npm install
+pnpm install
+
+# 環境チェック（初回におすすめ）
+pnpm run setup
 
 # Huskyの初期化（初回のみ）
-npm run prepare
+pnpm run prepare
 ```
 
 ### 開発サーバーの起動
 
 ```bash
 # Expo開発サーバーを起動
-npm start
+pnpm start
 
 # Androidで実行
-npm run android
+pnpm run android
 
 # iOSで実行（Macのみ）
-npm run ios
+pnpm run ios
 ```
 
 ## プロジェクト構成
@@ -106,6 +112,7 @@ SleepSupportApp/
 - ESLintとPrettierで自動フォーマット
 - TypeScriptの厳格モード有効
 - コミット前にlint-stagedで自動チェック
+- **Push前にpre-pushフックでブランチチェック**（`main`/`master`へのpush時や他人のコミットがある場合に警告し、任意でpush可能。現在のブランチとpush対象の一致を確認）
 
 ### ブランチ戦略
 
@@ -137,15 +144,19 @@ docs: READMEにセットアップ手順を追加
 
 ## 利用可能なスクリプト
 
-| コマンド            | 説明                   |
-| ------------------- | ---------------------- |
-| `npm start`         | Expo開発サーバーを起動 |
-| `npm run android`   | Androidで実行          |
-| `npm run ios`       | iOSで実行              |
-| `npm run lint`      | ESLintでコードチェック |
-| `npm run lint:fix`  | ESLintで自動修正       |
-| `npm run format`    | Prettierでフォーマット |
-| `npm run typecheck` | TypeScriptの型チェック |
+| コマンド                  | 説明                                           |
+| ------------------------- | ---------------------------------------------- |
+| `pnpm start` / `pnpm dev` | Expo開発サーバーを起動                         |
+| `pnpm run android`        | Androidで実行                                  |
+| `pnpm run ios`            | iOSで実行                                      |
+| `pnpm run setup`          | 環境チェック（初心者向け）                     |
+| `pnpm run check`          | lint + 型チェック + フォーマット確認を一括実行 |
+| `pnpm run reset`          | 詰まったときのリセット（node_modules 再構築）  |
+| `pnpm run start:clear`    | キャッシュをクリアして起動（挙動が怪しいとき） |
+| `pnpm run lint`           | ESLintでコードチェック                         |
+| `pnpm run lint:fix`       | ESLintで自動修正                               |
+| `pnpm run format`         | Prettierでフォーマット                         |
+| `pnpm run typecheck`      | TypeScriptの型チェック                         |
 
 ## 照度の目安
 
@@ -155,6 +166,17 @@ docs: READMEにセットアップ手順を追加
 | 10-50       | 睡眠準備に適している |
 | 50-300      | 通常の室内           |
 | 300以上     | 明るすぎる           |
+
+## 困ったときは
+
+| 症状                         | 対処法                                                        |
+| ---------------------------- | ------------------------------------------------------------- |
+| `pnpm` が動かない            | `corepack enable` を実行                                      |
+| Node のバージョンが合わない  | `.nvmrc` 参照。nvm なら `nvm use`                             |
+| 起動がおかしい・エラーが出る | `pnpm run reset` でリセット                                   |
+| Metro のキャッシュが怪しい   | `pnpm run start:clear` でキャッシュクリア起動                 |
+| コミットが通らない           | `pnpm run lint:fix` と `pnpm run format` を実行               |
+| push がブロックされる        | 保護ブランチや他人のコミットがある場合は確認して `y` で続行可 |
 
 ## 注意事項
 

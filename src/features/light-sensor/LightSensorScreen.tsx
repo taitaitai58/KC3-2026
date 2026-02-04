@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Platform } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
-import { useLightSensor } from '../hooks/useLightSensor';
-import { LightMeter } from '../components/LightMeter';
-import { COLORS } from '../constants';
+import { COLORS } from '@shared/constants';
+import { useLightSensor } from './hooks/useLightSensor';
+import { LightMeter } from './components/LightMeter';
 
 /**
- * ホーム画面コンポーネント
+ * 照度センサー画面コンポーネント
+ * 睡眠環境の照度を測定・評価する
  */
-export const HomeScreen: React.FC = () => {
+export const LightSensorScreen: React.FC = () => {
   const { data, isAvailable, isActive, sleepEnvironment, startSensor, stopSensor, error } =
     useLightSensor();
 
@@ -21,11 +21,9 @@ export const HomeScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style="light" />
-
       <View style={styles.header}>
-        <Text style={styles.title}>睡眠サポート</Text>
-        <Text style={styles.subtitle}>照度センサーで睡眠環境をチェック</Text>
+        <Text style={styles.title}>照度センサー</Text>
+        <Text style={styles.subtitle}>睡眠環境をチェック</Text>
       </View>
 
       <View style={styles.content}>

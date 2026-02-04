@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { COLORS } from '../constants';
+import { COLORS } from '@shared/constants';
 import type { SleepEnvironment } from '../types';
 
 interface LightMeterProps {
