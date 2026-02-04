@@ -164,22 +164,6 @@ docker-compose down
 docker-compose down -v
 ```
 
-### CRUDテスト
-
-```bash
-# 1. バックエンドを起動
-docker compose up -d
-
-# 2. 起動を待ってからテスト実行
-# 方法A: curl スクリプト（jq があれば整形表示）
-chmod +x backend/scripts/test-crud.sh
-./backend/scripts/test-crud.sh
-
-# 方法B: pytest（要: uv、DB起動中）
-# ※ TestClient と async DB の組み合わせでイベントループ競合が発生する場合あり
-cd backend && uv run pytest tests/ -v
-```
-
 ### エンドポイント
 
 | URL                                    | 説明                       |
@@ -219,9 +203,6 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # 依存関係のインストール
 cd backend && uv sync
-
-# 開発サーバー起動（DBは docker compose up -d で別途起動）
-uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 # テスト実行
 uv run pytest tests/ -v
