@@ -18,8 +18,7 @@
     "check": "pnpm run lint && pnpm run typecheck && pnpm run format:check",
     "setup": "node scripts/check-env.mjs",
     "reset": "node scripts/reset.mjs",
-    "start:clear": "expo start -c",
-    "prepare": "husky"
+    "start:clear": "expo start -c"
   },
   "engines": {
     "node": ">=18"
@@ -57,7 +56,6 @@
     "eslint-plugin-prettier": "^5.5.5",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
-    "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
     "prettier": "^3.8.1",
     "typescript": "~5.9.2"

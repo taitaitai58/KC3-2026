@@ -1,4 +1,0 @@
-#!/bin/sh
-# pre-push: push前に自動実行されるフック
-# main等への直接pushを防ぐチェック
-node scripts/check-branch-before-push.mjs
